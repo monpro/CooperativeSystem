@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<html>
+<head>
+    <title>Classroom</title>
+    <link rel="icon" href="/icon/website.png" type="image/x-icon">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="/stylesheets/theme.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.5.2/firebase.js"></script>
+    <link rel="stylesheet" href="/javascripts/codemirror/lib/codemirror.css">
+    <script type="text/javascript" src="/javascripts/codemirror/lib/codemirror.js"></script>
+    <script type="text/javascript" src="/javascripts/codemirror/mode/python/python.js"></script>
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/darcula.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/lucario.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/3024-night.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/abcdef.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/ambiance.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/base16-dark.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/bespin.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/blackboard.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/cobalt.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/colorforth.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/duotone-dark.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/duotone-light.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/eclipse.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/erlang-dark.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/idea.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/material.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/monokai.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/oceanic-next.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/panda-syntax.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/rubyblue.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/solarized.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/ssms.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/xq-light.css">
+    <link rel='stylesheet' href="/javascripts/codemirror/theme/zenburn.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Gothic+A1" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" ref="stylesheet">
+</head>
+<div id="roomId" style="display: none"><%=coderoom.id%></div>
+<div id="userId" style="display: none"><%=user.id%></div>
+<body>
+<div class="layout layout-nav-side" style="overflow: hidden;">
+    <div id="side-nav" class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color: #4abdac">
+        <div class="side-hide" style="height:20%;width:23px;position:absolute;"><i class="fa fa-chevron-left" aria-hidden="true"></i></div>
+        <div class="side-container" style="height:100%; width:100%; text-align:center; background-color: #4abdac;">
+        <a class="navbar-brand text-center" href="/"
+           style="font-size:2rem; margin-left:auto; margin-right:auto;">
+            OURCODES
+        </a>
+    
+            <div class="collapse navbar-collapse flex-column" id="navbar-collapse">
+                <%if(currentUser){%>
+                    <%if(currentUser.avatar) {%>
+                        <img id="logo" src="<%=currentUser.avatar%>" class="avatar" alt=""
+                             style="width:50px;height:50px;margin-left:auto; margin-right:auto">
+                    <%} else {%>
+                        <img id="logo" src="/icon/anonymous.png" class="avatar" alt=""
+                             style="width:50px;height:50px;margin-left:auto; margin-right:auto">
+                    <%}%>
+                <%} else {%>
+                    <img id="logo" src="/icon/anonymous.png" class="avatar" alt=""
+                         style="width:50px;height:50px;margin-left:auto; margin-right:auto">
+                    <div class="nav-sign btn-group text-center" style="margin-left:auto; margin-right:auto; font-weight:bold">
+                        <a class="nav-sign" href="/register" id="signup">Sign up</a>
+                        <a class="nav-sign" href="/login" id="signin">Sign in</a>
+                    </div>
+                    <div class="nav-bottom text-center" style="">
+                    </div>
+                <%}%>
+    
+    
+    
+            </div>
+        <div class="collapse navbar-collapse flex-column" id="navbar-collapse">
+
+            <hr>
+            <div class="coderoom-title">
+                <h2><%=coderoom.name%></h2>
+            </div>
+            <div class="coderoom-desc">
+                <p><%=coderoom.description%></p>
+            </div>
+
+        </div>
+
+        <!--<div class="d-none d-lg-block" style="margin-bottom: 1em; margin-top:3vh; bottom: 24px;">-->
+        <div class="d-none d-lg-block" style="bottom: 24px;">
+
+            <div style="margin-bottom: 1em">
+                <!--TODO style and place and update-->
+                <div id="like-number" class="like-text"><%=coderoom.room_rank%></div>
+                <%if(currentUser){%>
+                    <div class="like-btn-group">
+                        <div id="user-like" class='btn-like like' onclick="room_upvote()">
+
+                            <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+
+                        </div>
+                        <div id="user-dislike" class='btn-like dislike' onclick="room_downvote()">
+
+                            <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+
+                        </div>
+                    </div>
+                <%}%>
+                <hr>
+                <form method="get" action="/search">
+                    <div class="input-group input-group-dark input-group-round">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="material-icons">search</i>
+                            </span>
+                        </div>
+                        <input type="search" name="author" class="form-control form-control-dark" placeholder="Search author"
+                               aria-label="Search app" aria-describedby="search-app">
+                    </div>
+                </form>
+            </div>
+            <div class="dropup">
+                <%if(currentUser){%>
+                    <a href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img alt="Image" src='/icon/settings-e6e6e6.png' class="avatar" style="width:50px;height:50px;margin-left:auto; margin-right:auto"/>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/profiles/<%=currentUser.id%>" class="dropdown-item">Profile</a>
+                        <a href="/logout" class="dropdown-item">Log Out</a>
+                    </div>
+                    <div class="bottom-rigth" style="margin-left: 4em;display:none;">
+                            <div class=" mt-2">
+                                <button class="btn btn-warning btn-block" data-toggle="modal" data-target="#task-add-modal">
+                                    Create Coderoom
+                                </button>
+                            </div>
+                    </div>
+                <%}%>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <div id="content" style="height:100vh; width:calc(100vw - 264px); width:-webkit-calc(100vw-264px);">
+        <div class="bg-white breadcrumb-bar" style="padding: 8px 16px; margin-bottom:0px;border-bottom: solid 2px #EEE">
+            <nav aria-label="breadcrumb" style="width:100%">
+                <div class="button-group" style="display:inline">
+                    <button type="button" class="btn btn-outline-primary" onclick="run()">
+                        <i class="fa fa-play"></i>
+                        Run
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="requirePermission()">
+                        <i class="fa fa-key" style="transform: translateY(5px);"></i>
+                        <div style="display: inline-flex;
+                        white-space: normal;
+                        font-size: small;
+                        transform: translate(-5px,-5px);">
+                        Require Permission
+                        </div>
+                    </button>
+                    <!--TODO-->
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#user-manage-modal">
+                        <i class="fa fa-user"></i>
+                        User List
+                    </button>
+                    <%console.log(currentUser)%>
+                    <button type="button" class="btn btn-outline-primary" id="comment-btn" onclick="modeChange()">
+                        <i class="fa fa-comment" style="transform: translateY(5px);"></i>
+                        <div id="comment-btn-text" style="display: inline-flex;
+                        white-space: normal;
+                        font-size: small;
+                        transform: translate(-5px,-5px);">
+                        Show Comments
+                        </div>
+                    </button>
+                    <a href="/"><button type="button" class="btn btn-outline-danger">
+                        <i class="fa fa-sign-out"></i>
+                        Leave
+                    </button></a>
+                    <!--TODO-->
+                    <div id="permission" style="float:right; display: inline-flex; transform: translateY(7px);">Permission:
+                        <span id="read-permission" style="margin:0 5px">Read </span>
+                        <span id="write-permission" style="margin:0 5px">Write</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div id="code-content" class="block-1 dragbox" style="width: 97%;">
+            <div class="b1-main panel-1">
+                <textarea class="form-control" id="code_input" name='code_input'></textarea>
+            </div>
+            <label class="drag-bar-1" style="cursor: n-resize;height:5px;width:97%; z-index:10000;display:flex"></label>
+            <div class="b1-result penal-2" style="transform: translateY(-30px);">
+                <pre id='result' class="b1-pre" style=" color: white"></pre>
+            </div>
+        </div>
+        <div class="drag-bar"></div>
+
+        <div class="modal fade" id="user-manage-modal" tabindex="-1" role="dialog" aria-labelledby="user-manage-modal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">User list</h5>
+
+                    </div>
+                    <!--end of modal head-->
+                    <div class="modal-body">
+                        <!--TODO user list-->
+                        <div class="users-manage" data-filter-list="form-group-users">
+                            <div id="user-group" class="form-group-users">
+
+                            </div>
+                        </div>
+                    </div>
+                    <!--end of modal body-->
+                    <div class="modal-footer">
+                        <!--<button role="button" class="btn btn-primary" type="submit">-->
+                        <!--Done-->
+                        <!--</button>-->
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="chat-content" class="content-container" style="height: calc(100vh - 5rem);height: -webkit-calc(100vh-5rem); display: none;">
+            <div class="chat-module" data-filter-list="chat-module-body">
+
+                <div class="chat-module-top">
+                    <div id="chat-box" class="chat-module-body">
+                    </div>
+                </div>
+
+                <div class="chat-module-bottom">
+                    <form class="chat-form" style="margin-bottom:1em;">
+                        <textarea id="chat-message" class="form-control" placeholder="Type message" rows="1"></textarea>
+                    </form>
+                    <button id="chat-submit" class="btn btn-warning" type="button" onclick="postComment()">
+                        Submit
+                    </button>
+                </div>
+
+
+                <div class="modal fade" id="reply-modal" tabindex="-1" role="dialog" aria-labelledby="reply-modal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Reply</h5>
+
+                            </div>
+                            <!--end of modal head-->
+                            <div class="modal-body">
+                                <!--TODO reply comment-->
+                                <div class="modal-replyblock">
+                                    <textarea class="modal-replyarea"></textarea>
+                                </div>
+                            </div>
+                            <!--end of modal body-->
+                            <div class="modal-footer">
+                                <button id="reply-btn" role="button" data-dismiss="modal" class="btn btn-success" type="submit">
+                                    Reply
+                                </button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/javascripts/myJS2.js"></script>
+<script type="text/javascript" src="/javascripts/ellaJS.js"></script>
+<script type="text/javascript" src="/javascripts/coderoom.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/jquery.min.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/autosize.min.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/popper.min.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/prism.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/draggable.bundle.legacy.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/swap-animation.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/dropzone.min.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/list.min.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap/bootstrap.js"></script>
+<!--<script type="text/javascript" src="/javascripts/bootstrap/theme.js"></script>-->
+<script>
+    $("#write-permission").css('visibility', 'hidden');
+    // $("#read-permission").css('visibility', 'hidden');
+</script>
+<script>
+    $(document).ready(function(){
+        if (!$("#user-like").length>0) {
+            $("#like-number").css("transform","none");
+        }
+        if ($("#user-like").length>0) {
+            $("#like-number").removeClass("like-text");
+        }
+    })
+</script>
+</html>
